@@ -38,3 +38,4 @@ __pycache__/
 ######################
 GNUmakefile
 user.props
+.DS_Store
