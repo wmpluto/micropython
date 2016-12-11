@@ -189,7 +189,9 @@ void stm32_init(void) {
     UART_Open(UART3, 9600);
 
     GPIO_SetMode(PD, BIT9, GPIO_MODE_OUTPUT);
+    GPIO_SetMode(PD, BIT8, GPIO_MODE_OUTPUT);
     PD9 = 0;
+    PD8 = 0;
 }
 
 #endif
