@@ -54,13 +54,33 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
  */
 void SystemInit (void)
 {
-
     /* FPU settings ------------------------------------------------------------*/
-#if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
-    SCB->CPACR |= ((3UL << 10*2) |                 /* set CP10 Full Access */
-                   (3UL << 11*2)  );               /* set CP11 Full Access */
-#endif
+    #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+        SCB->CPACR |= ((3UL << 10*2) |                 /* set CP10 Full Access */
+                       (3UL << 11*2)  );               /* set CP11 Full Access */
+    #endif
 
+    // SCB->CCR: enable 8-byte stack alignment for IRQ handlers, in accord with EABI
+    *((volatile uint32_t*)0xe000ed14) |= 1 << 9;
+
+    SYS_UnlockReg();
+    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+    CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk);
+    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HXT,CLK_CLKDIV0_HCLK(1));
+    CLK->PLLCTL |= CLK_PLLCTL_PD_Msk;
+    CLK->PLLCTL = CLK_PLLCTL_84MHz_HXT;
+    CLK_WaitClockReady(CLK_STATUS_PLLSTB_Msk);
+    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_PLL,CLK_CLKDIV0_HCLK(1));
+
+    CLK_EnableModuleClock(UART3_MODULE);
+    CLK_SetModuleClock(UART3_MODULE, CLK_CLKSEL1_UARTSEL_HXT, CLK_CLKDIV0_UART(1));
+    SYS->GPD_MFPL = SYS_GPD_MFPL_PD4MFP_UART3_RXD | SYS_GPD_MFPL_PD5MFP_UART3_TXD ;
+    UART_Open(UART3, 9600);
+
+    GPIO_SetMode(PD, BIT9, GPIO_MODE_OUTPUT);
+    GPIO_SetMode(PD, BIT8, GPIO_MODE_OUTPUT);
+    PD9 = 0;
+    PD8 = 1;
 
 }
 /*** (C) COPYRIGHT 2015 Nuvoton Technology Corp. ***/

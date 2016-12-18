@@ -37,6 +37,7 @@ SRC_C = \
 	StdDriver/src/sys.c \
 	StdDriver/src/uart.c \
 	Device/Nuvoton/NUC472_442/Source/system_NUC472_442.c \
+	Device/Nuvoton/NUC472_442/Source/GCC/startup_NUC472_442.c \
 	lib/utils/stdout_helpers.c \
 	lib/utils/pyexec.c \
 	lib/libc/string0.c \
